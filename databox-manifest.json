@@ -1,0 +1,28 @@
+{
+	"manifest-version": 1,
+
+	"name": "driver-tplink-smart-plug",
+	"databox-type": "driver",
+	"version": "0.1.0",
+
+	"description": "An driver for tplink smart plugs.",
+	"author": "Tosh Brown <Anthony.Brown@nottingham.ac.uk>",
+	"license": "MIT",
+	"tags": [
+		"tplink",
+		"smatplug",
+		"gloang"
+	],
+
+	"homepage": "https://github.com/me-box/driver-tplink-smart-plug",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/me-box/driver-tplink-smart-plug"
+	},
+
+
+	"resource-requirements": {
+		"store": ["store-json"]
+	}
+
+}

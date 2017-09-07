@@ -1,0 +1,44 @@
+<!doctype html>
+<html class="no-js" lang="">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <title></title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <link rel="stylesheet" href="ui/static/css/normalize.min.css">
+        <link rel="stylesheet" href="ui/static/css/main.css">
+
+        <script src="ui/static/js/vendor/modernizr-2.8.3.min.js"></script>
+    </head>
+    <body>
+       
+        <div class="plugs">
+        <h1>Available Plugs</h1>
+        <hr>
+        {{ if .}} {{range .}}
+        <div class="plug">
+            <span class="name">{{.Name}}</span> 
+            <span class="mac">{{.Mac}}</span> 
+            <span class="ip">{{.IP}}</span> 
+            <span class="state">{{.State}}</span> 
+        </div>
+        {{end}} {{else}}
+        <div class="plugs">
+            <p class="">No Plugs added.</p>
+        </div>
+        {{end}}
+        <h1>Scan For Plugs</h1>
+        <hr>
+        <div class="form">
+            <form id="add">
+            <label for="ip">Enter sub net to scan (format xxx.xxx.xxx)</label>
+            <input type="text" name="plugSubNet" id="ip" value="192.168.0"><br><br>
+            <input id="addPlug" type="button" value="Scan">
+            </form>
+        </div>
+        <script>document.write('<script src="ui/static/js/vendor/jquery-1.11.2.min.js"><\/script>')</script>
+        <script src="ui/static/js/main.js"></script>
+    </body>
+</html>
