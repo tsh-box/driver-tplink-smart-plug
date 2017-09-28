@@ -2,6 +2,7 @@ package plugs
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/http"
 	"os"
@@ -70,6 +71,22 @@ func updateReadings() {
 
 }
 
+func SetPowerState(plugID string, state int) error {
+	//find plug
+	for ip, plug := range plugList {
+		if plug.ID == plugID {
+			p := hs1xxplug.Hs1xxPlug{IPAddress: ip}
+			if state == 1 {
+				p.TurnOn()
+				return nil
+			}
+			p.TurnOff()
+			return nil
+		}
+	}
+	return errors.New("Plug " + plugID + " not found")
+}
+
 func scanForPlugs() {
 
 	for i := 1; i < 255; i++ {
@@ -114,8 +131,21 @@ func registerPlugWithDatabox(p plug) {
 		Description:    "TP-Link Wi-Fi Smart Plug HS100 power state",
 		ContentType:    "application/json",
 		Vendor:         "TP-Link",
-		DataSourceType: "PowerState",
+		DataSourceType: "TP-PowerState",
 		DataSourceID:   "state-" + p.ID,
+		StoreType:      "store-json",
+		IsActuator:     false,
+		Unit:           "",
+		Location:       "",
+	}
+	databox.RegisterDatasource(store_endpoint, metadata)
+
+	metadata = databox.StoreMetadata{
+		Description:    "TP-Link Wi-Fi Smart Plug HS100 set power state",
+		ContentType:    "application/json",
+		Vendor:         "TP-Link",
+		DataSourceType: "TP-SetPowerState",
+		DataSourceID:   "setState-" + p.ID,
 		StoreType:      "store-json",
 		IsActuator:     true,
 		Unit:           "",
@@ -123,6 +153,14 @@ func registerPlugWithDatabox(p plug) {
 	}
 	databox.RegisterDatasource(store_endpoint, metadata)
 
+	//subscribe for events on the setState actuator
+	fmt.Println("Subscribing for update on ", "setState-"+p.ID)
+	res, err := databox.WSSubscribe(store_endpoint+"/"+"setState-"+p.ID, "ts")
+	if err != nil {
+		fmt.Println("Error subscribing for update on ", "setState-"+p.ID, err)
+	} else {
+		fmt.Println("Susses subscribing for update on ", "setState-"+p.ID, res)
+	}
 }
 
 // SetScanSubNet is used to set the subnet to scan for new plugs

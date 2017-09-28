@@ -1,10 +1,12 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
 	"os"
+	"strings"
 	"text/template"
 
 	"./plugs"
@@ -54,6 +56,13 @@ func scanForPlugs(w http.ResponseWriter, req *http.Request) {
 
 }
 
+type actuationRequest struct {
+	DatasourceID string `json:"datasource_id"`
+	Data         string `json:"data"`
+	Timestamp    int64  `json:"timestamp"`
+	ID           string `json:"_id"`
+}
+
 func main() {
 
 	//Wait for my store to become active
@@ -64,6 +73,36 @@ func main() {
 
 	go plugs.ForceScan()
 
+	//actuation
+	actuationChan, err := databox.WSConnect(dataStoreHref)
+	if err == nil {
+
+		go func(actuationRequestChan chan []byte) {
+			for {
+				//blocks util request received
+				request := <-actuationRequestChan
+				fmt.Println("Got Actuation Request", string(request[:]))
+				ar := actuationRequest{}
+				err1 := json.Unmarshal(request, &ar)
+				if err == nil {
+					state := 1
+					if ar.Data == "off" {
+						state = 0
+					}
+					err2 := plugs.SetPowerState(strings.Replace(ar.DatasourceID, "setState-", "", -1), state)
+					if err2 != nil {
+						fmt.Println("Error setting state ", err2)
+					}
+				} else {
+					fmt.Println("Error parsing json ", err1)
+				}
+			}
+		}(actuationChan)
+
+	} else {
+		fmt.Println("Error connecting to websocket for actuation", err)
+	}
+
 	//
 	// Handel Https requests
 	//
@@ -72,8 +111,6 @@ func main() {
 	router.HandleFunc("/status", getStatusEndpoint).Methods("GET")
 	router.HandleFunc("/ui", displayUI).Methods("GET")
 	router.HandleFunc("/ui", scanForPlugs).Methods("POST")
-
-	//TODO actuation
 
 	static := http.StripPrefix("/ui/static", http.FileServer(http.Dir("./www/")))
 	router.PathPrefix("/ui/static").Handler(static)
