@@ -60,10 +60,12 @@ func updateReadings() {
 	for _ = range plugList {
 		res := <-resChan
 		jsonString, _ := json.Marshal(res.Emeter.GetRealtime)
-		databox.StoreJSONWriteTS(store_endpoint+"/"+macToID(res.System.Mac), string(jsonString))
+		fmt.Println("Sending 1 Realtime::", string(jsonString))
+		databox.StoreJSONWriteTS(store_endpoint+"/"+macToID(res.System.Mac), "{\"data\":"+string(jsonString)+"}")
 
 		jsonString, _ = json.Marshal(res.System.RelayState)
-		databox.StoreJSONWriteTS(store_endpoint+"/"+"state-"+macToID(res.System.Mac), string(jsonString))
+		fmt.Println("Sending state ::", string(jsonString))
+		databox.StoreJSONWriteTS(store_endpoint+"/"+"state-"+macToID(res.System.Mac), "{\"data\":"+string(jsonString)+"}")
 	}
 
 }
