@@ -32,7 +32,7 @@ func PlugHandler() {
 	for {
 		select {
 		case <-getDataChan:
-			fmt.Println("Updating plugs!!")
+			fmt.Println("Updating plugs!! -> ", len(plugList))
 			go updateReadings()
 		case <-scanForNewPlugsChan:
 			fmt.Println("Scanning for plugs!!")
@@ -51,23 +51,32 @@ func updateReadings() {
 
 	for _, p := range plugList {
 		go func(pl plug, c chan<- *Reading) {
+			fmt.Println("Getting data for ", pl.ID)
 			data, err := getPlugData(pl.IP)
 			if err == nil {
 				c <- data
+			} else {
+				fmt.Println("Error getting data", err)
 			}
 		}(p, resChan)
 	}
 
-	for _ = range plugList {
+	for _, p := range plugList {
 		res := <-resChan
-		jsonString, _ := json.Marshal(res.Emeter.GetRealtime)
-		fmt.Println("Sending 1 Realtime::", string(jsonString))
-		databox.StoreJSONWriteTS(store_endpoint+"/"+macToID(res.System.Mac), "{\"data\":"+string(jsonString)+"}")
-
+		jsonString, err := json.Marshal(res.Emeter.GetRealtime)
+		if err != nil {
+			fmt.Println("Error unmarshing")
+		}
+		fmt.Println("Sending 1 Realtime::", p.ID, string(jsonString))
+		sendErr := databox.StoreJSONWriteTS(store_endpoint+"/"+macToID(res.System.Mac), "{\"data\":"+string(jsonString)+"}")
+		if err != sendErr {
+			fmt.Println("Error StoreJSONWriteTS", sendErr)
+		}
 		jsonString, _ = json.Marshal(res.System.RelayState)
-		fmt.Println("Sending state ::", string(jsonString))
 		databox.StoreJSONWriteTS(store_endpoint+"/"+"state-"+macToID(res.System.Mac), "{\"data\":"+string(jsonString)+"}")
 	}
+
+	fmt.Println("Done Updating plugs!! -> ", len(plugList))
 
 }
 
@@ -159,7 +168,7 @@ func registerPlugWithDatabox(p plug) {
 	if err != nil {
 		fmt.Println("Error subscribing for update on ", "setState-"+p.ID, err)
 	} else {
-		fmt.Println("Susses subscribing for update on ", "setState-"+p.ID, res)
+		fmt.Println("Success subscribing for update on ", "setState-"+p.ID, res)
 	}
 }
 
