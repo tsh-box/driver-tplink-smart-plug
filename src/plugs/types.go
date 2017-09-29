@@ -47,14 +47,14 @@ type Reading struct {
 		GetRealtime struct {
 			Current float64 `json:"current"`
 			Voltage float64 `json:"voltage"`
-			Power   int     `json:"power"`
+			Power   float64 `json:"power"`
 			Total   float64 `json:"total"`
 			ErrCode int     `json:"err_code"`
 		} `json:"get_realtime"`
 		GetVgainIgain struct {
-			Vgain   int `json:"vgain"`
-			Igain   int `json:"igain"`
-			ErrCode int `json:"err_code"`
+			Vgain   float64 `json:"vgain"`
+			Igain   float64 `json:"igain"`
+			ErrCode int     `json:"err_code"`
 		} `json:"get_vgain_igain"`
 	} `json:"emeter"`
 }
