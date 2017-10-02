@@ -11,6 +11,7 @@ RUN GGO_ENABLED=0 GOOS=linux go build -a -tags netgo -installsuffix netgo -ldfla
 
 FROM alpine:latest  
 WORKDIR /root/
+FROM scratch
 COPY --from=gobuild /app .
 COPY --from=gobuild /www/ /root/www/
 COPY --from=gobuild /tmpl/ /root/tmpl/
