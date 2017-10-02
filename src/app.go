@@ -56,9 +56,13 @@ func scanForPlugs(w http.ResponseWriter, req *http.Request) {
 
 }
 
+type data struct {
+	Data string `json:"data"`
+}
+
 type actuationRequest struct {
 	DatasourceID string `json:"datasource_id"`
-	Data         string `json:"data"`
+	Data         data   `json:"data"`
 	Timestamp    int64  `json:"timestamp"`
 	ID           string `json:"_id"`
 }
@@ -86,7 +90,7 @@ func main() {
 				err1 := json.Unmarshal(request, &ar)
 				if err == nil {
 					state := 1
-					if ar.Data == "off" {
+					if ar.Data.Data == "off" {
 						state = 0
 					}
 					err2 := plugs.SetPowerState(strings.Replace(ar.DatasourceID, "setState-", "", -1), state)
