@@ -1,18 +1,16 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
 	"os"
-	"strings"
 	"text/template"
 
 	"./plugs"
 
 	"github.com/gorilla/mux"
-	databox "github.com/me-box/lib-go-databox"
+	databox "github.com/toshbrown/lib-go-databox"
 )
 
 var dataStoreHref = os.Getenv("DATABOX_STORE_ENDPOINT")
@@ -67,10 +65,16 @@ type actuationRequest struct {
 	ID           string `json:"_id"`
 }
 
+var DATABOX_ZMQ_ENDPOINT = os.Getenv("DATABOX_ZMQ_ENDPOINT")
+
 func main() {
 
-	//Wait for my store to become active
-	databox.WaitForStoreStatus(dataStoreHref)
+	fmt.Println("DATABOX_ZMQ_ENDPOINT", DATABOX_ZMQ_ENDPOINT)
+
+	/*tsc, err1 := databox.NewJSONTimeSeriesClient(DATABOX_ZMQ_ENDPOINT, true)
+	if err1 != nil {
+		fmt.Println("Error creating zest client", err1)
+	}*/
 
 	//start the plug handler it scans for new plugs and polls for data
 	go plugs.PlugHandler()
@@ -78,7 +82,7 @@ func main() {
 	go plugs.ForceScan()
 
 	//actuation
-	actuationChan, err := databox.WSConnect(dataStoreHref)
+	/*actuationChan, err := databox.WSConnect(dataStoreHref)
 	if err == nil {
 
 		go func(actuationRequestChan chan []byte) {
@@ -105,11 +109,12 @@ func main() {
 
 	} else {
 		fmt.Println("Error connecting to websocket for actuation", err)
-	}
+	}*/
 
 	//
 	// Handel Https requests
 	//
+
 	router := mux.NewRouter()
 
 	router.HandleFunc("/status", getStatusEndpoint).Methods("GET")
