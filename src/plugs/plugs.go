@@ -79,7 +79,9 @@ func updateReadings(tsc databox.JSONTimeSeries_0_2_0) {
 		}
 
 		jsonString, _ = json.Marshal(res.System.RelayState)
-		err = tsc.Write("state-"+macToID(res.System.Mac), jsonString)
+		saveString := `{"state":` + string(jsonString) + `}`
+		fmt.Println("Writing 2 Realtime::", p.ID, saveString)
+		err = tsc.Write("state-"+macToID(res.System.Mac), []byte(saveString))
 		if err != nil {
 			fmt.Println("Error StoreJSONWriteTS", err)
 		}

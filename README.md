@@ -24,7 +24,7 @@ For each plug there are two datasources
 ```
 2) TP-PowerState, this holds a time series of
 ```
-    data: 1
+    data: {"state":1}
 
     1 indicates on 0 indicates off
 ```
