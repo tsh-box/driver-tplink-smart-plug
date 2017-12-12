@@ -65,51 +65,12 @@ type actuationRequest struct {
 	ID           string `json:"_id"`
 }
 
-var DATABOX_ZMQ_ENDPOINT = os.Getenv("DATABOX_ZMQ_ENDPOINT")
-
 func main() {
-
-	fmt.Println("DATABOX_ZMQ_ENDPOINT", DATABOX_ZMQ_ENDPOINT)
-
-	/*tsc, err1 := databox.NewJSONTimeSeriesClient(DATABOX_ZMQ_ENDPOINT, true)
-	if err1 != nil {
-		fmt.Println("Error creating zest client", err1)
-	}*/
 
 	//start the plug handler it scans for new plugs and polls for data
 	go plugs.PlugHandler()
 
 	go plugs.ForceScan()
-
-	//actuation
-	/*actuationChan, err := databox.WSConnect(dataStoreHref)
-	if err == nil {
-
-		go func(actuationRequestChan chan []byte) {
-			for {
-				//blocks util request received
-				request := <-actuationRequestChan
-				fmt.Println("Got Actuation Request", string(request[:]))
-				ar := actuationRequest{}
-				err1 := json.Unmarshal(request, &ar)
-				if err == nil {
-					state := 1
-					if ar.Data.Data == "off" {
-						state = 0
-					}
-					err2 := plugs.SetPowerState(strings.Replace(ar.DatasourceID, "setState-", "", -1), state)
-					if err2 != nil {
-						fmt.Println("Error setting state ", err2)
-					}
-				} else {
-					fmt.Println("Error parsing json ", err1)
-				}
-			}
-		}(actuationChan)
-
-	} else {
-		fmt.Println("Error connecting to websocket for actuation", err)
-	}*/
 
 	//
 	// Handel Https requests
