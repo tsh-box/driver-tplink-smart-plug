@@ -116,11 +116,18 @@ func scanForPlugs() {
 			if isPlugAtURL(url) == true && isPlugInList(ip) == false {
 				fmt.Println("Plug found at", ip)
 				res, _ := getPlugInfo(ip)
+				fmt.Println(res)
+				var name string
+				if res.System.GetSysinfo.Alias != "" {
+					name = res.System.GetSysinfo.Alias
+				} else {
+					name = res.System.GetSysinfo.DevName
+				}
 				p := plug{
 					ID:    macToID(res.System.GetSysinfo.Mac),
 					IP:    ip,
 					Mac:   res.System.GetSysinfo.Mac,
-					Name:  res.System.GetSysinfo.DevName,
+					Name:  name,
 					State: "Online",
 				}
 				newPlugFoundChan <- p
