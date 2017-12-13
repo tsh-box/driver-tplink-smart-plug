@@ -197,7 +197,7 @@ func registerPlugWithDatabox(p plug, tsc databox.JSONTimeSeries_0_2_0) {
 					if ar.Data.Data == "off" {
 						state = 0
 					}
-					err2 := SetPowerState("setState-"+p.ID, state)
+					err2 := SetPowerState(p.ID, state)
 					if err2 != nil {
 						fmt.Println("Error setting state ", err2)
 					}
