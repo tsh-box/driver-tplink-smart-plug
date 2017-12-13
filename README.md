@@ -10,7 +10,7 @@ By default, it will scan 192.168.1.[1-254] for plugs but this is configurable.
 
 # Data
 
-For each plug there are two datasources
+For each plug there are two data sources
 
 1) TP-Power-Usage, this holds a time series of:
 ```
