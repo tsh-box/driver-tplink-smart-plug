@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"net/http"
+	"net"
 	"os"
 	"strconv"
 	"strings"
@@ -113,9 +113,7 @@ func scanForPlugs() {
 
 		go func(j int) {
 			ip := scan_sub_net + "." + strconv.Itoa(j)
-			url := "http://" + string(ip) + "/"
-
-			if isPlugAtURL(url) == true && isPlugInList(ip) == false {
+			if isPlugAtIP(ip) == true && isPlugInList(ip) == false {
 				fmt.Println("Plug found at", ip)
 				res, _ := getPlugInfo(ip)
 				fmt.Println(res)
@@ -252,18 +250,15 @@ func getPlugData(ip string) (*Reading, error) {
 	return j, jsonError
 }
 
-func isPlugAtURL(url string) bool {
-	client := &http.Client{Timeout: 1 * time.Second}
-	req, _ := http.NewRequest("GET", url, nil)
-	resp, err := client.Do(req)
-	if err == nil {
-		server := resp.Header.Get("Server")
-		fmt.Println("Header::Server ", server)
-		if server == "TP-LINK SmartPlug" {
-			return true
-		}
+func isPlugAtIP(ip string) bool {
+	d := net.Dialer{Timeout: 20 * time.Millisecond}
+	conn, err := d.Dial("tcp", ip+":9999")
+	if err != nil {
+		return false
 	}
-	return false
+
+	conn.Close()
+	return true
 }
 
 func isPlugInList(ip string) bool {
