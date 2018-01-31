@@ -251,7 +251,7 @@ func getPlugData(ip string) (*Reading, error) {
 }
 
 func isPlugAtIP(ip string) bool {
-	d := net.Dialer{Timeout: 20 * time.Millisecond}
+	d := net.Dialer{Timeout: 50 * time.Millisecond}
 	conn, err := d.Dial("tcp", ip+":9999")
 	if err != nil {
 		return false
