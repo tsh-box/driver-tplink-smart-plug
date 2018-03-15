@@ -14,10 +14,10 @@
 		"gloang"
 	],
 
-	"homepage": "https://github.com/me-box/driver-tplink-smart-plug",
+	"homepage": "https://github.com/tsh2/driver-tplink-smart-plug",
 	"repository": {
 		"type": "git",
-		"url": "git+https://github.com/me-box/driver-tplink-smart-plug"
+		"url": "git+https://github.com/tsh2/driver-tplink-smart-plug"
 	},
 
 
