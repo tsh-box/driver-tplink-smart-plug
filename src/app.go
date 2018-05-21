@@ -10,7 +10,7 @@ import (
 	"./plugs"
 
 	"github.com/gorilla/mux"
-	databox "github.com/tsh2/lib-go-databox"
+	databox "github.com/tsh-box/lib-go-databox"
 )
 
 var dataStoreHref = os.Getenv("DATABOX_STORE_ENDPOINT")
